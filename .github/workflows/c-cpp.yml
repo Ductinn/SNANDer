@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Upload Release Asset
+    name: Upload artitact
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -19,25 +19,7 @@ jobs:
         run: ./build-for-windows.sh
       - name: build for linux
         run: ./build-for-linux.sh
-      - name: compress build folder
-        run: tar -czvf snander.tar.gz build
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v4
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Upload Release Asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./snander.tar.gz
-          asset_name: snander.tar.gz
-          asset_content_type: application/gzip
+          name: build
+          path: ./build/ # or path/to/artifact
